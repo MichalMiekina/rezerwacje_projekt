@@ -1,0 +1,165 @@
+﻿<Window x:Class="Projekt_Rezerwacje.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+        xmlns:vm="clr-namespace:Projekt_Rezerwacje.ViewModel"
+        xmlns:local="clr-namespace:Projekt_Rezerwacje"
+        mc:Ignorable="d"
+        Title="Rezerwacje" Height="450" Width="800" MinHeight="450" MinWidth="800">
+    <Window.Resources>
+        <vm:MainViewModel x:Key="mainVM"/>
+    </Window.Resources>
+    
+    <Grid DataContext="{StaticResource mainVM}">
+        <TabControl>
+            <TabItem Header="Rezerwacje">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="2*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="2*"/>
+                        </Grid.ColumnDefinitions>
+                        <Label Content="Hotel:" Grid.Row="0" Grid.Column="0"/>
+                        <ComboBox Margin="5" Grid.Column="1" ItemsSource="{Binding ReservationsTabVM.ListOfHotels}" 
+                                  SelectedItem="{Binding ReservationsTabVM.SelectedHotel}">
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="SelectionChanged">
+                                    <i:InvokeCommandAction Command="{Binding ReservationsTabVM.GetRooms}"/>
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                        </ComboBox>
+                        <Label Content="Szukaj klienta:" Grid.Row="1" Grid.ColumnSpan="2"/>
+                        <TextBox Grid.Row="1" Grid.Column="1" Margin="5" Text="{Binding ReservationsTabVM.SearchedClient}"/>
+                        <Button  Grid.Row="2" Grid.ColumnSpan="2" Margin="5" Content="Szukaj" Command="{Binding ReservationsTabVM.SearchClient}"/>
+                        <ListBox  Margin="5" Grid.Row="3" Grid.ColumnSpan="2" ItemsSource="{Binding ReservationsTabVM.ListOfClients}" 
+                                  SelectedItem="{Binding ReservationsTabVM.SelectedClient}"/>
+                        <Label Content="Pakiet:" Grid.Row="4" Margin="5"/>
+                        <ComboBox Margin="5" Grid.Row="4" Grid.Column="1" ItemsSource="{Binding ReservationsTabVM.Packages}"
+                                  SelectedItem="{Binding ReservationsTabVM.CurrentPackage}" Text="Wybierz pakiet">
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="SelectionChanged">
+                                    <i:InvokeCommandAction Command="{Binding ReservationsTabVM.GetRooms}"/>
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                        </ComboBox>
+                        <Label Content="Pokój:" Grid.Row="5" Margin="5" />
+                        <ListBox  Margin="5" Grid.Column="1" Grid.Row="5" ItemsSource="{Binding ReservationsTabVM.ListOfRooms}" 
+                                 SelectedItem="{Binding ReservationsTabVM.SelectedRoom}">
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="SelectionChanged">
+                                    <i:InvokeCommandAction Command="{Binding ReservationsTabVM.GetReservations}"/>
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                        </ListBox>
+                        <Label Content="Od:" Grid.Row="6" Margin="5" />
+                        <DatePicker Grid.Row="6" Grid.Column="1" Margin="5" SelectedDate="{Binding ReservationsTabVM.StartDate}"/>
+                        <Label Content="Do:" Grid.Row="7" Margin="5" />
+                        <DatePicker Grid.Row="7" Grid.Column="1" Margin="5" SelectedDate="{Binding ReservationsTabVM.EndDate}"/>
+                    </Grid>
+                    <Grid Grid.Column="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <ListBox x:Name="ListBoxRezerwacje" Grid.ColumnSpan="3" Grid.Row="0" Margin="5" ItemsSource="{Binding ReservationsTabVM.ListOfReservations}"/>
+                        <ListView x:Name="ReservationListView" Grid.ColumnSpan="3" ItemsSource="{Binding ReservationsTabVM.ListOfReservations}" 
+                                  SelectedItem="{Binding ReservationsTabVM.SelectedReservation, Mode=TwoWay }" 
+                                  SelectedIndex="{Binding ReservationsTabVM.SelectedID, Mode=TwoWay }">
+
+                            <ListView.View>
+                                <GridView>
+                                    <GridView.Columns>
+                                        <GridViewColumn DisplayMemberBinding="{Binding Path=Client.Name}" Header="Imię" Width="100"/>
+                                        <GridViewColumn DisplayMemberBinding="{Binding Path=Client.LastName}" Header="Nazwisko" Width="100"/>
+                                        <GridViewColumn DisplayMemberBinding="{Binding Path=Discount}" Header="Zniżka" Width="70"/>
+                                        <GridViewColumn DisplayMemberBinding="{Binding Path=Ended}" Header="Zakończono" Width="90"/>
+                                        <GridViewColumn DisplayMemberBinding="{Binding Path=StartDate, StringFormat='{}{0:dd.MM.yyyy}'}" Header="Od" Width="75"/>
+                                        <GridViewColumn DisplayMemberBinding="{Binding Path=EndDate, StringFormat='{}{0:dd.MM.yyyy}'}" Header="Do" Width="75"/>
+                                    </GridView.Columns>
+                                </GridView>
+                            </ListView.View>
+                        </ListView>
+                        <Button x:Name="ButtonAdd" Grid.Row="1" Grid.Column="0" Content="Dodaj" Margin="5" Command="{Binding ReservationsTabVM.AddReservation}"/>
+                        <Button x:Name="ButtonEdit" Grid.Row="1" Grid.Column="1" Content="Zakończ" Margin="5" Command="{Binding ReservationsTabVM.EndReservation}"/>
+                        <Button x:Name="ButtonDelete" Grid.Row="1" Grid.Column="2" Content="Usuń" Margin="5" Command="{Binding ReservationsTabVM.DeleteReservation}"/>
+                    </Grid>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Klienci" >
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="2*"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel>
+                        <Label Content="Imię:" Margin="5"/>
+                        <TextBox x:Name="NameTextBox" Margin="5" Text="{Binding ClientsTabVM.Name, UpdateSourceTrigger=PropertyChanged}"/>
+                        <Label Content="Nazwisko:" Margin="5"/>
+                        <TextBox x:Name="LastNameTextBox" Margin="5" Text="{Binding ClientsTabVM.LastName, UpdateSourceTrigger=PropertyChanged}"/>
+                        <Label Content="Telefon:" Margin="5"/>
+                        <TextBox x:Name="PhoneTextBox" Margin="5" Text="{Binding ClientsTabVM.Phone, UpdateSourceTrigger=PropertyChanged}"/>
+                    </StackPanel>
+                    <Grid Grid.Column="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+
+                        <ListView x:Name="ClientsListView" Grid.ColumnSpan="3"  
+                              SelectedItem="{Binding ClientsTabVM.CurrentClient}" 
+                              ItemsSource="{Binding ClientsTabVM.ListOfClients}"
+                              SelectedIndex="{Binding ClientsTabVM.SelectedID, Mode=TwoWay}">
+
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="SelectionChanged">
+                                    <i:InvokeCommandAction Command="{Binding ClientsTabVM.LoadClient}"/>
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+
+                            <ListView.View>
+                                <GridView>
+                                    <GridView.Columns>
+                                        <GridViewColumn DisplayMemberBinding="{Binding Path=Name}" Header="Imię" Width="150"/>
+                                        <GridViewColumn DisplayMemberBinding="{Binding Path=LastName}" Header="Nazwisko" Width="150"/>
+                                        <GridViewColumn DisplayMemberBinding="{Binding Path=PhoneNumber}" Header="Telefon" Width="150"/>
+                                    </GridView.Columns>
+                                </GridView>
+                            </ListView.View>
+                        </ListView>
+
+                        <Button x:Name="ButtonAddClient" Grid.Row="1" Grid.Column="0" Content="Dodaj" Margin="5" Command="{Binding ClientsTabVM.AddClient}"/>
+                        <Button x:Name="ButtonEditClient" Grid.Row="1" Grid.Column="1" Content="Edytuj" Margin="5" Command="{Binding ClientsTabVM.EditClient}"/>
+                        <Button x:Name="ButtonDeleteClient" Grid.Row="1" Grid.Column="2" Content="Usuń" Margin="5" Command="{Binding ClientsTabVM.DeleteClient}"/>
+                    </Grid>
+                </Grid>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</Window>
